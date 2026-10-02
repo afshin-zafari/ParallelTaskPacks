@@ -1,0 +1,11 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="CMakeLists.txt" />
+  </Folder>
+  <Project Path="ParallelTaskPacks.vcxproj" Id="c06acbb9-9574-4a35-9e42-6c06f49b377c" />
+  <Project Path="ParallelTaskPacks_gTests/ParallelTaskPacks_gTests.vcxproj" Id="f8bd226b-9333-42d8-9c95-e8c7ef4fd17e" />
+</Solution>

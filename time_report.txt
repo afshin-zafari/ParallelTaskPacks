@@ -1,0 +1,76 @@
+Running main() from D:\a\_work\1\s\googletest\googletest\src\gtest_main.cc
+Note: Google Test filter = *Timing*
+[==========] Running 1 test from 1 test case.
+[----------] Global test environment set-up.
+[----------] 1 test from TestExecution
+[ RUN      ] TestExecution.TimingExecution
+
+-------------------
+TaskPack: M = 128, Mb = 8
+
+========== Event Timing Report ==========
+Event                      Count      Sum (ms)      Avg (ms)      Min (ms)      Max (ms)
+TaskExecution                 10        26.518         2.652         1.665         3.943
+=========================================
+
+-------------------
+EventPerTask: M = 128, Mb = 8
+
+========== Event Timing Report ==========
+Event                      Count      Sum (ms)      Avg (ms)      Min (ms)      Max (ms)
+TaskExecution                 10        27.283         2.728         2.103         4.138
+=========================================
+
+-------------------
+TaskPack: M = 128, Mb = 16
+
+========== Event Timing Report ==========
+Event                      Count      Sum (ms)      Avg (ms)      Min (ms)      Max (ms)
+TaskExecution                 10       207.532        20.753        19.888        23.421
+=========================================
+
+-------------------
+EventPerTask: M = 128, Mb = 16
+
+========== Event Timing Report ==========
+Event                      Count      Sum (ms)      Avg (ms)      Min (ms)      Max (ms)
+TaskExecution                 10       315.053        31.505        28.303        45.184
+=========================================
+
+-------------------
+TaskPack: M = 128, Mb = 32
+
+========== Event Timing Report ==========
+Event                      Count      Sum (ms)      Avg (ms)      Min (ms)      Max (ms)
+TaskExecution                 10      4665.135       466.513       373.222       575.924
+=========================================
+
+-------------------
+EventPerTask: M = 128, Mb = 32
+
+========== Event Timing Report ==========
+Event                      Count      Sum (ms)      Avg (ms)      Min (ms)      Max (ms)
+TaskExecution                 10      7426.428       742.643       617.334       953.140
+=========================================
+
+-------------------
+TaskPack: M = 128, Mb = 64
+
+========== Event Timing Report ==========
+Event                      Count      Sum (ms)      Avg (ms)      Min (ms)      Max (ms)
+TaskExecution                 10     81446.662      8144.666      6091.443     12982.260
+=========================================
+
+-------------------
+EventPerTask: M = 128, Mb = 64
+
+========== Event Timing Report ==========
+Event                      Count      Sum (ms)      Avg (ms)      Min (ms)      Max (ms)
+TaskExecution                 10    142080.074     14208.007     11078.714     22254.111
+=========================================
+[       OK ] TestExecution.TimingExecution (378822 ms)
+[----------] 1 test from TestExecution (378827 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test case ran. (378828 ms total)
+[  PASSED  ] 1 test.

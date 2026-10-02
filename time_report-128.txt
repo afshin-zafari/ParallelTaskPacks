@@ -1,0 +1,28 @@
+Running main() from D:\a\_work\1\s\googletest\googletest\src\gtest_main.cc
+Note: Google Test filter = *Timing*
+[==========] Running 1 test from 1 test case.
+[----------] Global test environment set-up.
+[----------] 1 test from TestExecution
+[ RUN      ] TestExecution.TimingExecution
+
+-------------------
+TaskPack: M = 128, Mb = 128
+
+========== Event Timing Report ==========
+Event                      Count      Sum (ms)      Avg (ms)      Min (ms)      Max (ms)
+TaskExecution                  2    290087.961    145043.981    131506.275    158581.686
+=========================================
+
+-------------------
+EventPerTask: M = 128, Mb = 128
+
+========== Event Timing Report ==========
+Event                      Count      Sum (ms)      Avg (ms)      Min (ms)      Max (ms)
+TaskExecution                  2    417858.566    208929.283    207004.027    210854.538
+=========================================
+[       OK ] TestExecution.TimingExecution (891094 ms)
+[----------] 1 test from TestExecution (891101 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test case ran. (891105 ms total)
+[  PASSED  ] 1 test.

@@ -1,0 +1,240 @@
+Started task on thread 1: square_0Started task on thread 2: square_1
+
+square_1square_0 is running. is running.
+
+Task Name: Task Name: square_0square_1
+
+  State: TASK_STARTED  State: TASK_STARTED
+
+  Data:   Data: A_0_1A_0_0   READ   READ, Wait for: , Wait for: 0
+  Data: 0B_0_1
+ MODIFY, Wait for: 0  Data: 
+B_0_0 MODIFY, Wait for: 0A_0_1
+ state after task finished: 1
+B_0_1 state after task finished: 1
+Started task on thread 2: square_2
+square_2 is running.
+Task Name: square_2
+A_0_0  State: TASK_STARTED state after task finished: 
+1
+  Data: A_0_2B_0_0   READ state after task finished: , Wait for: 10
+
+Started task on thread 1:   Data: square_3
+B_0_2square_3 MODIFY is running., Wait for: 0
+
+Task Name: square_3
+A_0_2  State: TASK_STARTED state after task finished: 
+1  Data: 
+A_0_3   READ, Wait for: 0B_0_2
+ state after task finished:   Data: 1B_0_3 MODIFY
+, Wait for: 0
+Started task on thread 2: A_0_3 state after task finished: square_41
+
+square_4 is running.B_0_3
+ state after task finished: 1Task Name: 
+square_4
+Started task on thread 1:   State: TASK_STARTEDsquare_5
+
+  Data: square_5 is running.
+A_0_4Task Name:    READsquare_5, Wait for: 
+0  State: TASK_STARTED
+
+  Data:   Data: B_0_4A_0_5 MODIFY   READ, Wait for: , Wait for: 00
+
+  Data: B_0_5 MODIFY, Wait for: 0A_0_4
+ state after task finished: 1
+B_0_4 state after task finished: 1
+Started task on thread 2: square_6
+square_6 is running.
+Task Name: square_6
+A_0_5  State: TASK_STARTED state after task finished: 
+1  Data: 
+A_0_6   READ, Wait for: 0B_0_5
+ state after task finished: 1  Data: 
+B_0_6 MODIFY, Wait for: 0Started task on thread 1: 
+square_7
+A_0_6square_7 state after task finished:  is running.1
+
+Task Name: square_7
+B_0_6  State: TASK_STARTED state after task finished: 
+1  Data: 
+A_0_7   READ, Wait for: 0Started task on thread 2: 
+square_8  Data: 
+B_0_7 MODIFY, Wait for: square_80 is running.
+
+A_0_7Task Name:  state after task finished: square_81
+
+  State: TASK_STARTED
+B_0_7  Data:  state after task finished: 1A_0_8
+   READ, Wait for: 0Started task on thread 1: 
+square_9
+  Data: square_9 is running.
+B_0_8Task Name:  MODIFYsquare_9, Wait for: 
+0  State: TASK_STARTED
+
+A_0_8  Data:  state after task finished: 1A_0_9   READ
+, Wait for: 0B_0_8
+ state after task finished:   Data: 1B_0_9 MODIFY
+, Wait for: 0
+Started task on thread 2: A_0_9square_0 state after task finished: 1
+
+square_0 is running.B_0_9
+ state after task finished: 1Task Name: 
+square_0
+Started task on thread 1:   State: TASK_STARTEDsquare_1
+
+  Data: square_1 is running.
+A_0_0Task Name:    READsquare_1, Wait for: 
+0  State: TASK_STARTED
+
+  Data:   Data: B_0_0A_0_1 MODIFY   READ, Wait for: , Wait for: 00
+
+A_0_0  Data:  state after task finished: 2B_0_1 MODIFY
+, Wait for: 0B_0_0
+ state after task finished: 2
+Started task on thread 2: square_2
+A_0_1square_2 state after task finished: 2 is running.
+
+B_0_1Task Name:  state after task finished: 2square_2
+
+Started task on thread 1:   State: TASK_STARTEDsquare_3
+
+  Data: square_3 is running.
+A_0_2Task Name:    READsquare_3, Wait for: 
+0  State: TASK_STARTED
+
+  Data:   Data: B_0_2A_0_3 MODIFY   READ, Wait for: , Wait for: 00
+
+A_0_2  Data:  state after task finished: 2B_0_3 MODIFY
+, Wait for: 0B_0_2
+ state after task finished: 2
+Started task on thread 2: square_4
+square_4 is running.
+Task Name: square_4
+A_0_3  State: TASK_STARTED state after task finished: 
+2  Data: 
+A_0_4   READ, Wait for: 0B_0_3
+ state after task finished: 2  Data: 
+B_0_4 MODIFY, Wait for: 0Started task on thread 1: 
+square_5
+A_0_4square_5 state after task finished:  is running.2
+
+Task Name: square_5
+B_0_4  State: TASK_STARTED state after task finished: 
+2  Data: 
+A_0_5   READ, Wait for: 0Started task on thread 2: 
+square_6  Data: 
+B_0_5 MODIFY, Wait for: square_60 is running.
+
+A_0_5Task Name:  state after task finished: square_62
+
+  State: TASK_STARTED
+B_0_5  Data:  state after task finished: 2A_0_6
+   READ, Wait for: 0Started task on thread 1: 
+square_7
+  Data: square_7 is running.
+Task Name: square_7
+B_0_6  State: TASK_STARTED MODIFY
+, Wait for: 0  Data: 
+A_0_7   READ, Wait for: 0A_0_6
+ state after task finished:   Data: 2B_0_7 MODIFY
+, Wait for: 0B_0_6
+ state after task finished: 2
+Started task on thread 2: square_8
+square_8 is running.
+Task Name: square_8
+A_0_7  State: TASK_STARTED state after task finished: 
+2  Data: 
+A_0_8   READ, Wait for: 0B_0_7
+ state after task finished: 2  Data: 
+B_0_8 MODIFY, Wait for: 0Started task on thread 1: 
+square_9
+A_0_8square_9 state after task finished:  is running.2
+
+Task Name: square_9
+B_0_8  State: TASK_STARTED state after task finished: 
+2  Data: 
+A_0_9   READ, Wait for: 0Started task on thread 2: 
+square_0  Data: 
+B_0_9 MODIFY, Wait for: square_00 is running.
+
+A_0_9Task Name:  state after task finished: square_02
+
+  State: TASK_STARTED
+B_0_9  Data:  state after task finished: 2A_0_0
+   READ, Wait for: 0Started task on thread 1: 
+square_1
+  Data: square_1 is running.
+B_0_0Task Name:  MODIFYsquare_1, Wait for: 
+0  State: TASK_STARTED
+
+A_0_0  Data:  state after task finished: 3A_0_1   READ
+, Wait for: 0B_0_0
+ state after task finished:   Data: 3B_0_1 MODIFY
+, Wait for: 0
+Started task on thread 2: A_0_1 state after task finished: square_23
+
+square_2 is running.B_0_1
+ state after task finished: 3
+Task Name: square_2
+Started task on thread 1:   State: TASK_STARTEDsquare_3
+
+  Data: square_3 is running.
+A_0_2Task Name:    READsquare_3, Wait for: 
+0  State: TASK_STARTED
+
+  Data:   Data: B_0_2A_0_3 MODIFY   READ, Wait for: , Wait for: 00
+
+A_0_2  Data:  state after task finished: 3B_0_3 MODIFY
+, Wait for: 0B_0_2
+ state after task finished: 3
+Started task on thread 2: square_4
+square_4 is running.
+Task Name: square_4
+  State: TASK_STARTED
+A_0_3  Data:  state after task finished: 3A_0_4
+   READ, Wait for: 0B_0_3
+ state after task finished: 3  Data: 
+B_0_4 MODIFY, Wait for: 0Started task on thread 1: 
+square_5
+A_0_4square_5 state after task finished:  is running.3
+
+Task Name: square_5
+B_0_4  State: TASK_STARTED state after task finished: 
+3  Data: 
+A_0_5   READ, Wait for: 0Started task on thread 2: 
+square_6  Data: 
+B_0_5 MODIFY, Wait for: square_60 is running.
+
+A_0_5Task Name:  state after task finished: square_63
+
+  State: TASK_STARTED
+B_0_5  Data:  state after task finished: 3A_0_6
+   READ, Wait for: 0Started task on thread 1: 
+square_7
+  Data: B_0_6square_7 MODIFY is running., Wait for: 0
+
+Task Name: square_7
+A_0_6  State: TASK_STARTED state after task finished: 
+3  Data: 
+A_0_7   READ, Wait for: 0B_0_6
+ state after task finished:   Data: 3B_0_7 MODIFY
+, Wait for: 0
+Started task on thread 2: A_0_7 state after task finished: 3square_8
+
+B_0_7 state after task finished: 3square_8
+ is running.
+Started task on thread 1: Task Name: square_8square_9
+
+  State: TASK_STARTEDsquare_9 is running.
+
+  Data: Task Name: square_9
+A_0_8  State: TASK_STARTED   READ
+, Wait for:   Data: 0A_0_9   READ
+, Wait for: 0  Data: 
+B_0_8  Data:  MODIFY, Wait for: 0B_0_9 MODIFY
+, Wait for: 0A_0_8
+ state after task finished: 3
+B_0_8 state after task finished: 3
+A_0_9 state after task finished: 3
+B_0_9 state after task finished: 3
