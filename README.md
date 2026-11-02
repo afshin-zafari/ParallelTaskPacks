@@ -286,7 +286,7 @@ We put all the the `Scheduler`s and `Pack`s and kernels inside a single `PackMan
       <td style="text-align: center;"><i>coming soon</i></td>
     </tr>
     <tr>
-      <td style="text-align: center;">Comparing with PyTorch/vLLM</td>
+      <td style="text-align: center;"> Adding operator to PyTorch</td>
       <td style="text-align: center;"><i>comes after all above</i></td>
     </tr>
   </tbody>

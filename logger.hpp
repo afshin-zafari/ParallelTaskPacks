@@ -6,7 +6,6 @@
 #include <iostream>
 #include <mutex>
 #include <string>
-#include <string_view>
 #include <utility>
 
 enum class LogLevel {
@@ -64,14 +63,14 @@ private:
     std::mutex m_mutex;
 
     template <typename... Args>
-    void log(LogLevel level, std::string_view level_str, const char* fmt, Args&&... args) {
+    void log(LogLevel level, std::string level_str, const char* fmt, Args&&... args) {
         if (level < m_min_level) {
             return;
         }
 
         // Format the message using printf-style formatting safely
         std::string formatted_msg;
-        if constexpr (sizeof...(Args) > 0) {
+        if (sizeof...(Args) > 0) {
             // Determine required buffer size
             int size = std::snprintf(nullptr, 0, fmt, args...) + 1;
             if (size > 0) {

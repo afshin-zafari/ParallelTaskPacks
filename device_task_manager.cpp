@@ -2,27 +2,14 @@
 
 #include "device_task_manager.hpp"
 #include "gpu_tasks.hpp"
-#include "logger.hpp"
 #include "package_manager.hpp"
 #include "scheduler.hpp"
 #include "timer_aggregate.hpp"
 #include "transfer_memory.hpp"
 
 
-#define __global__
-#define __shared__ 
-void __syncthreads() {}
-void __nanosleep(int ns) {}
-void __threadfence() {}
-void process_task(GPUTask& t) {}
-size_t atomicAdd(size_t* mem, int val) {
-	size_t ret = *mem;
-	*mem += val;
-	return ret;
-}
-
 //__device__ 
-void run_task(int p, GPUTask* gt) {	
+void run_task_cpu(int p, GPUTask* gt) {	
 	switch (gt->get_op_code()) {
 	case Op_SumReduction:
 		break;
@@ -36,7 +23,7 @@ void run_task(int p, GPUTask* gt) {
 }
 
 
-static void persistent_kernel(bool* kernels_end, GPUTaskPlaceState* gpu_packs, size_t np, size_t n_pl, size_t pl) {
+static void persistent_kernel_cpu(bool* kernels_end, GPUTaskPlaceState* gpu_packs, size_t np, size_t n_pl, size_t pl) {
 	int p = 0;	
 	vector<string> kernel_tasks;
 	while (true) {
@@ -62,7 +49,7 @@ static void persistent_kernel(bool* kernels_end, GPUTaskPlaceState* gpu_packs, s
 				state = finished;
 				break;
 			}
-			run_task(p, &tasks[t]);
+			run_task_cpu(p, &tasks[t]);
 			t++;			
 		}
 		if (t >= max_task_count) {
@@ -114,7 +101,7 @@ void DeviceTaskManager::finalize() {
 	return;
 }
 
-void DeviceTaskManager::start(vector<Scheduler*> *schedulers) {
+void DeviceTaskManager::start() {
 	loop_future = std::async(std::launch::async, [&]() {
 		TransferMemory::RID rid;
 		bool exit_loop = false;
@@ -164,7 +151,7 @@ void DeviceTaskManager::start(vector<Scheduler*> *schedulers) {
 	size_t pack_count = packs->size();
 	for (size_t k = 0; k < pl_count; k++) {
 		kernel_futures.emplace_back(std::async(std::launch::async,
-			persistent_kernel, pkg_manager->get_kernel_end(), gpu_packs, pack_count, pl_count, k
+			persistent_kernel_cpu, pkg_manager->get_kernel_end(), gpu_packs, pack_count, pl_count, k
 		)
 		);
 	}

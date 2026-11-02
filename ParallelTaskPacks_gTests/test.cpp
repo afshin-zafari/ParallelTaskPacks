@@ -253,9 +253,10 @@ TEST(TestExecution, Hierarchical) {
 
 	EXPECT_TRUE(s.verify_self()) << "Not all tasks are in their final state";
 }
-
 struct dim2 { int x, y; };
+#ifndef __CUDA
 struct dim3 { int x, y, z; };
+#endif
 
 Data* create_tensor(Scheduler& s, const char* A, dim2 d, dim2 tile) {
 	int _n = d.x * d.y * sizeof(int); \

@@ -1,6 +1,7 @@
 #include <chrono>
 #include <cstring>
 
+#include "cuda_code.hpp"
 #include "scheduler.hpp"
 #include "transfer_memory.hpp"
 
@@ -27,7 +28,7 @@ TransferMemory::RID TransferMemory::register_xfer(TransferMemory::Request& req) 
 	map[req.rid] = req;
 	req.stream_index = last_stream++;
 #ifdef __CUDA
-	using namespace cudaProxy;
+	//using namespace cudaProxy;
 	cudaEventCreate(&req.event);
 	cudaMemcpyAsync(req.dst, req.src, req.size, 
 		req.dir == HOST_TO_DEV ? cudaMemcpyHostToDevice : cudaMemcpyDeviceToHost, streams[req.stream_index]);
@@ -48,7 +49,7 @@ bool TransferMemory::is_done(TransferMemory::RID rid) {
 	}
 	auto& req = map[rid];
 #ifdef __CUDA	
-	return id_done(req.event);
+	return is_done(req.event);
 #else
 	using namespace std::chrono_literals;
 	if (req.async_state.valid()) {
@@ -72,7 +73,7 @@ bool TransferMemory::check_and_remove_if_done(TransferMemory::RID rid) {
 bool TransferMemory::is_done(Event event) {
 #ifdef __CUDA
 	using namespace cudaProxy;
-	return cudaEventQuery(event) == cudaSuccess;
+	return cudaEventQuery(event) == ::cudaSuccess;
 #else
 	return false;
 #endif

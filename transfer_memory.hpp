@@ -2,14 +2,18 @@
 #include <future>
 #include <vector>
 #include <unordered_map>
-
-
-#include "cuda_proxy.hpp"
 #include "task.hpp"
 
-using namespace std;
+#include "cuda_code.hpp"
+#ifdef __CUDA
+using Stream = cudaStream_t;
+using Event  = cudaEvent_t;
+#else
 using Stream = cudaProxy::cudaStream_t;
 using Event  = cudaProxy::cudaEvent_t;
+#endif
+
+using namespace std;
 class TransferMemory {
 public:
 	typedef size_t RID;

@@ -27,19 +27,19 @@
     <ClCompile Include="partitioner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cuda_proxy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="transfer_memory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="device_task_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="package_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gpu_tasks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="logger.hpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="device_task_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,7 +59,7 @@
     <ClInclude Include="partitioner.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cuda_proxy.hpp">
+    <ClInclude Include="cuda_code.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="transfer_memory.hpp">
@@ -74,9 +74,6 @@
     <ClInclude Include="gpu_tasks.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="logger.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="timer_aggregate.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -87,5 +84,10 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="cuda_code.cpp">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 #pragma once
 #include "common.hpp"
+#include "cuda_code.hpp"
 #include "task.hpp"
 
 struct GEMM_Op_Args { void* A{ nullptr }; void* B{ nullptr }; void* C{ nullptr }; float alpha{ 1.0 }; };
@@ -17,7 +18,7 @@ private:
 public:
 	GPUTask(Task*);
 	GPUTask(op_code);
-	op_code get_op_code() const { return _op_code; }
+	__host__ __device__	op_code get_op_code() const { return _op_code; }
 	task_id_t get_task_id() const { return task_id; }
 	task_id_t get_scheduler_id() const { return sch_id; }
 	const Args& get_args() const { return _args; }

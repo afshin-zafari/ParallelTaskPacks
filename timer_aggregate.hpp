@@ -9,7 +9,7 @@
 #include <limits>
 #include <mutex>
 #include <ostream>
-#include <string_view>
+#include <string>
 #include <unordered_map>
 
 enum class AggregateTimerEvent
@@ -17,24 +17,15 @@ enum class AggregateTimerEvent
     WaitForReadyTask,
     CreatePack,
     TaskExecution,
-    LoadConfig,
-    ConnectDatabase,
-    ProcessData,
-    SaveResults,
     Count // Sentinel: number of events
 };
-
-constexpr std::string_view eventName(AggregateTimerEvent event) noexcept
-{
+static 
+const char* eventName(AggregateTimerEvent event) {
     switch (event)
     {
     case AggregateTimerEvent::WaitForReadyTask: return "WaitForReadyTask";
     case AggregateTimerEvent::CreatePack:       return "CreatePack";
     case AggregateTimerEvent::TaskExecution:    return "TaskExecution";
-    case AggregateTimerEvent::LoadConfig:       return "LoadConfig";
-    case AggregateTimerEvent::ConnectDatabase:  return "ConnectDatabase";
-    case AggregateTimerEvent::ProcessData:      return "ProcessData";
-    case AggregateTimerEvent::SaveResults:      return "SaveResults";
     case AggregateTimerEvent::Count:            break;
     }
 

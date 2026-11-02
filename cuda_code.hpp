@@ -1,7 +1,28 @@
 #pragma once
 #include <cstddef>
-#ifndef CUDA_PROXY
-#define CUDA_PROXY
+#define __CUDA
+
+
+#ifdef __CUDA
+#include <cuda_runtime.h>
+#else
+#define __device__
+#define __global__
+#endif
+
+#include "common.hpp"
+
+#ifndef CUDA_CODE
+#define CUDA_CODE
+
+
+class GPUTask;
+struct GPUTaskPlaceState;
+__device__
+void run_task(int p, GPUTask* gt);
+__global__
+void persistent_kernel(bool* kernels_end, GPUTaskPlaceState* gpu_packs, size_t np, size_t n_pl, size_t pl);
+
 using namespace std;
 namespace cudaProxy {
 	struct cudaEvent_t { int i; };
@@ -19,4 +40,4 @@ namespace cudaProxy {
 	cudaError_t cudaMalloc(void** devPtr, size_t size);
 	cudaError_t cudaMallocManaged(void** devPtr, size_t size, int = 1);
 }
-#endif /// CUDA_PROXY
+#endif /// CUDA_CODE

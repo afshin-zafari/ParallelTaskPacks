@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "transfer_memory.hpp"
+#include "cuda_code.hpp"
 
 
 class PackageManager;
@@ -18,7 +19,8 @@ private:
 	GPUTaskPlaceState* gpu_packs;
 public:
 	DeviceTaskManager(PackageManager* pmngr);	
-	void start(vector<Scheduler*>* = nullptr);
+	void start();
+	void start_gpu();
 	void copy_to_dev(int p, int pl);
 	void parallel_lane_finished(int p, int pl);
 	void finalize();
