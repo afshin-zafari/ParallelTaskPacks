@@ -30,6 +30,7 @@ enum op_code : uint8_t {
     Op_arriveBarrier,
     Op_waitBarrier,
     Op_end_the_kernels,
+    Op_last_internal_code,
     Op_GEMM,
     Op_SumReduction,
     Op_Square,

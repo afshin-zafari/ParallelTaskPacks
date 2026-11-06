@@ -86,7 +86,7 @@ TEST(TestPartition, WithTasks) {
 		Task* t = new Task(&s, Op_Square, "square_" + std::to_string(i));		
 		t->reads(a(i))->modifies(b(i));
 	}
-	for (int i = 0; i < N; i += 2) {
+	for (size_t i = 0; i < N; i += 2) {
 		Task* t = new Task(&s, Op_SumReduction, "sum_" + std::to_string(i));		
 		t->reads(b(i))->reads(b(i + 1))->modifies(c(i));
 	}
@@ -126,7 +126,7 @@ TEST(TestPartition, MainLoopGoesToEnd) {
 		Task* t = new Task(&s, Op_Square, "square_" + std::to_string(i));
 		t->reads(a(i))->modifies(b(i));
 	}
-	for (int i = 0; i < N; i += 2) {
+	for (size_t i = 0; i < N; i += 2) {
 		Task* t = new Task(&s, Op_SumReduction, "sum_" + std::to_string(i));
 		t->reads(b(i))->reads(b(i + 1))->modifies(c(i));
 	}
@@ -165,11 +165,11 @@ TEST(TestExecution, ConsumerThreads) {
 		Task* t = new Task(&s, Op_Square, "square_" + std::to_string(i));
 		t->reads(a(i))->modifies(b(i));
 	}
-	for (int i = 0; i < N; i += 2) {
+	for (size_t i = 0; i < N; i += 2) {
 		Task* t = new Task(&s, Op_SumReduction, "sum_" + std::to_string(i));
 		t->reads(b(i))->reads(b(i + 1))->modifies(c(i));
 	}
-	for (int i = 2; i < N; i += 2) {
+	for (size_t i = 2; i < N; i += 2) {
 		Task* t = new Task(&s, Op_ReduceMax, "reduce_" + std::to_string(i));
 		t->reads(c(i))->modifies(c(0));		
 	}
@@ -203,10 +203,10 @@ TEST(TestSugarring, Basic) {
 	for (int i = 0; i < N; ++i) {
 		task_2_args("square_", a(i), b(i));
 	}
-	for (int i = 0; i < N; i += 2) {
+	for (size_t i = 0; i < N; i += 2) {
 		task_3_args("sum_", b(i), b(i + 1), c(i));
 	}
-	for (int i = 2; i < N; i += 2) {
+	for (size_t i = 2; i < N; i += 2) {
 		task_2_args("reduce_", c(i), c(0));
 	}
 
@@ -219,7 +219,7 @@ TEST(TestSugarring, Basic) {
 }
 
 void decompose_sAxPy(Scheduler& s, Task* parentTask, const int parts) {
-	auto dataArgs = parentTask->get_data();
+	auto& dataArgs = parentTask->get_data();
 	Data* A = s.get_data(dataArgs[0]);
 	Data* B = s.get_data(dataArgs[1]);
 	Data* C = s.get_data(dataArgs[2]);
@@ -254,16 +254,14 @@ TEST(TestExecution, Hierarchical) {
 	EXPECT_TRUE(s.verify_self()) << "Not all tasks are in their final state";
 }
 struct dim2 { int x, y; };
-#ifndef __CUDA
-struct dim3 { int x, y, z; };
-#endif
 
-Data* create_tensor(Scheduler& s, const char* A, dim2 d, dim2 tile) {
-	int _n = d.x * d.y * sizeof(int); \
-		void* mem_A = malloc(_n);\
-		Data* dA = s.register_data(A, mem_A, _n); \
-		dA->partition(tile.x, tile.y);
-	return dA;
+
+Data* create_tensor(Scheduler& s, const char* A, dim2 shape, dim2 tile) {
+	size_t bytes_A = (size_t)shape.x * shape.y * sizeof(float); 
+	void* mem_A = malloc(bytes_A);
+	Data* ptr_A = s.register_data(A, mem_A, bytes_A); 
+	ptr_A->partition(tile.x, tile.y);
+	return ptr_A;
 }
 
 void create_SumRow(string name, Scheduler& s, Data* A, Data* B, dim2 tiles) {
@@ -300,27 +298,211 @@ void create_MatMul(string name, Scheduler& s, Data* A, Data* B, Data* C, dim2 ti
 	}
 }
 
-void create_QK_SumRow(Scheduler& s, string tag) {
-	dim2 dim_qk{ 128, 2048 };
-	dim2 dim_d{ 128, 1 };
-	dim2 tiles_qk{ 4, 4 };
-	dim2 tiles_sum_row{ 4, 1 };
-	auto Q = create_tensor(s, "Q", dim_qk, tiles_qk);
-	auto K = create_tensor(s, "K", dim_qk, tiles_qk);
-	auto C = create_tensor(s, "C", dim_qk, tiles_qk);
-	auto D = create_tensor(s, "D", dim_d, tiles_sum_row);
+struct QKConfig {
+	dim2 dim_qk;
+	dim2 dim_d;
+	dim2 tiles_qk;
+	dim2 tiles_sum_row;
+};
 
-	create_MatMul(string("QKMult") + tag, s, Q, K, C, tiles_qk);
-	create_SumRow(string("SumRow") + tag, s, C, D, tiles_sum_row);
+void create_QK_SumRow(Scheduler& s, string tag, QKConfig config) {
+	auto Q = create_tensor(s, "Q", config.dim_qk, config.tiles_qk);
+	auto K = create_tensor(s, "K", config.dim_qk, config.tiles_qk);
+	auto C = create_tensor(s, "C", config.dim_qk, config.tiles_qk);
+	auto D = create_tensor(s, "D", config.dim_d, config.tiles_sum_row);
+
+	create_MatMul(string("QKMult") + tag, s, Q, K, C, config.tiles_qk);
+	create_SumRow(string("SumRow") + tag, s, C, D, config.tiles_sum_row);
 }
 
+
+
+TEST(PacksTest, PackContents_OneScheduler) {
+
+	Logger::instance().set_level(LogLevel::Error);
+	Scheduler::clear_all();
+	Scheduler s;
+	const int mB = 4, nB = 4;
+	QKConfig qk_cfg{ {128, 2048}, {128, 1}, {mB, nB}, {mB, 1} };
+	create_QK_SumRow(s, "_s", qk_cfg);
+	vector<Scheduler*> sch{ &s };
+	
+
+	PackageManager pmngr(&sch, 20, 2, 1);		
+	map<data_id_t, bool> data_written;
+
+	pmngr.create_first_packs();
+	for (auto& tp : *pmngr.get_packs()) {
+		data_written.clear();
+		for (auto& pl : *tp.para_lanes) {
+			for (auto& gtask : pl.ready_tasks) {
+				if (gtask.get_op_code() <= Op_last_internal_code) {
+					continue;
+				}
+				auto tid = gtask.get_task_id();
+				auto sid = gtask.get_scheduler_id();
+				auto *task = sch[sid]->get_task(tid);
+				auto& task_data = task->get_data();
+				for (int i = 0; i < task_data.size(); i++) {
+					auto data = sch[sid]->get_data(task_data[i]);
+					auto access = task->get_access()->at(i);
+					if (access == ACCESS_MODIFY) {
+						size_t x, y;
+						data->get_block_index(x, y);
+						EXPECT_TRUE(data_written.find(data->get_id()) == data_written.end()) << "Block (" << x << ", " << y << ") was written to multiple times";
+						data_written[data->get_id()] = true;
+					}
+				}
+			}
+		}
+	}
+	
+}
+
+TEST(PacksTest, PackContents_TwoSchedulers) {
+
+	Logger::instance().set_level(LogLevel::Error);
+	Scheduler::clear_all();
+	Scheduler s1,s2;
+	const int mB = 4, nB = 4;
+	QKConfig qk_cfg{ {128, 2048}, {128, 1}, {mB, nB}, {mB, 1} };
+	create_QK_SumRow(s1, "_s1", qk_cfg);
+	create_QK_SumRow(s2, "_s2", qk_cfg);
+	vector<Scheduler*> sch{ &s1, &s2 };
+	
+
+	PackageManager pmngr(&sch, 20, 2, 1);		
+	map<data_id_t, bool> data_written;
+
+	pmngr.create_first_packs();
+	for (auto& tp : *pmngr.get_packs()) {
+		data_written.clear();
+		for (auto& pl : *tp.para_lanes) {
+			for (auto& gtask : pl.ready_tasks) {
+				if (gtask.get_op_code() <= Op_last_internal_code) {
+					continue;
+				}
+				auto tid = gtask.get_task_id();
+				auto sid = gtask.get_scheduler_id();
+				auto *task = sch[sid]->get_task(tid);
+				auto& task_data = task->get_data();
+				for (int i = 0; i < task_data.size(); i++) {
+					auto data = sch[sid]->get_data(task_data[i]);
+					auto access = task->get_access()->at(i);
+					if (access == ACCESS_MODIFY) {
+						size_t x, y;
+						data->get_block_index(x, y);
+						EXPECT_TRUE(data_written.find(data->get_id()) == data_written.end()) << "Block (" << x << ", " << y << ") was written to multiple times";						
+						data_written[data->get_id()] = true;
+					}
+				}
+			}
+		}
+	}
+	
+}
+
+TEST(PacksTest, PackContents_PackSequences) {
+
+	Logger::instance().set_level(LogLevel::Error);
+	Scheduler::clear_all();
+	Scheduler s1,s2;
+	const int mB = 4, nB = 4;
+	QKConfig qk_cfg{ {128, 2048}, {128, 1}, {mB, nB}, {mB, 1} };
+	create_QK_SumRow(s1, "_s1", qk_cfg);
+	create_QK_SumRow(s2, "_s2", qk_cfg);
+	vector<Scheduler*> sch{ &s1, &s2 };
+	
+
+	PackageManager pmngr(&sch, 20, 2, 1);		
+	map<data_id_t, bool> data_written;
+
+	pmngr.create_first_packs();
+	pmngr.create_next_pack();
+	for (auto& tp : *pmngr.get_packs()) {
+		data_written.clear();
+		for (auto& pl : *tp.para_lanes) {
+			for (auto& gtask : pl.ready_tasks) {
+				if (gtask.get_op_code() <= Op_last_internal_code) {
+					continue;
+				}
+				auto tid = gtask.get_task_id();
+				auto sid = gtask.get_scheduler_id();
+				auto *task = sch[sid]->get_task(tid);
+				auto& task_data = task->get_data();
+				for (size_t i = 0; i < task_data.size(); i++) {
+					auto data = sch[sid]->get_data(task_data[i]);
+					auto access = task->get_access()->at(i);
+					if (access == ACCESS_MODIFY) {
+						size_t x, y;
+						data->get_block_index(x, y);
+						EXPECT_TRUE(data_written.find(data->get_id()) == data_written.end()) << "Block (" << x << ", " << y << ") was written to multiple times";						
+						data_written[data->get_id()] = true;
+					}
+				}
+			}
+		}
+	}
+	
+}
+
+TEST(PacksTest, PackContents_InsufficientTaskCount) {
+
+	Logger::instance().set_level(LogLevel::Error);
+	Scheduler::clear_all();
+	Scheduler s1,s2;
+	const int mB = 4, nB = 4;
+	QKConfig qk_cfg{ {128, 2048}, {128, 1}, {mB, nB}, {mB, 1} };
+	create_QK_SumRow(s1, "_s1", qk_cfg);
+	create_QK_SumRow(s2, "_s2", qk_cfg);
+	vector<Scheduler*> sch{ &s1, &s2 };
+	
+	const int min_task_count = 20;
+	PackageManager pmngr(&sch, 20, 2, min_task_count);		
+	map<data_id_t, bool> data_written;
+	int sch_count[2] = { 0,0 };
+	int task_count = 0;
+
+	pmngr.create_first_packs();
+	
+	for (auto& tp : *pmngr.get_packs()) {
+		data_written.clear();
+		for (auto& pl : *tp.para_lanes) {
+			for (auto& gtask : pl.ready_tasks) {
+				if (gtask.get_op_code() <= Op_last_internal_code) {
+					continue;
+				}
+				auto tid = gtask.get_task_id();
+				auto sid = gtask.get_scheduler_id();
+				auto *task = sch[sid]->get_task(tid);
+				sch_count[sid]++;
+				task_count++;
+				auto& task_data = task->get_data();
+				for (size_t i = 0; i < task_data.size(); i++) {
+					auto data = sch[sid]->get_data(task_data[i]);
+					auto access = task->get_access()->at(i);
+					if (access == ACCESS_MODIFY) {
+						size_t x, y;
+						data->get_block_index(x, y);
+						EXPECT_TRUE(data_written.find(data->get_id()) == data_written.end()) << "Block (" << x << ", " << y << ") was written to multiple times";						
+						data_written[data->get_id()] = true;
+					}
+				}
+			}
+		}
+	}
+	EXPECT_TRUE(sch_count[0] > 0 && sch_count[1] > 0) << "Both schedulers should have tasks in the first pack";
+	EXPECT_TRUE(task_count >= min_task_count) << "Not enough tasks in the first pack";
+}
 
 TEST(TestExecution, TaskPacks) {
 
 	Logger::instance().set_level(LogLevel::Error);
 	Scheduler s1, s2;
-	create_QK_SumRow(s1, "_s1");
-	create_QK_SumRow(s2, "_s2");
+	QKConfig qk_cfg{ {128, 2048}, {128, 1}, {4, 4}, {4, 1} };
+
+	create_QK_SumRow(s1, "_s1", qk_cfg);
+	create_QK_SumRow(s2, "_s2", qk_cfg);
 	vector<Scheduler*> sch;
 	sch.push_back(&s1);
 	sch.push_back(&s2);
@@ -331,13 +513,13 @@ TEST(TestExecution, TaskPacks) {
 	dmngr.start();
 	dmngr.finalize();
 	EXPECT_TRUE(s1.verify_self());
-	EXPECT_TRUE(s2.verify_self());	
+	EXPECT_TRUE(s2.verify_self());
 }
 
 TEST(TestExecution, TimingExecution) {
 	Logger::instance().set_level(LogLevel::Error);
 	
-	dim2 shape, tiles;	
+	dim2 shape{0, 0}, tiles{0, 0};
 	int M_list[] = {128};	
 	int Mb_list[] = {4};
 	Scheduler s;

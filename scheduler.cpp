@@ -7,12 +7,8 @@
 #include "scheduler.hpp"
 
 long Scheduler::last_id = 0;
-Scheduler::Scheduler() {
+Scheduler::Scheduler() {	
 	id = last_id++;	
-}
-Scheduler::Scheduler(bool with_task_pack) {
-	id = last_id++;
-	task_pack_mode = with_task_pack;
 }
 
 task_id_t Scheduler::register_task(Task* t, Task *parentTask) {
@@ -23,7 +19,7 @@ task_id_t Scheduler::register_task(Task* t, Task *parentTask) {
 		parentTask->add_to_children(t);
 	}
 	tasks.push_back(t);
-	return tasks.size() - 1;
+	return static_cast<task_id_t>(tasks.size() - 1);
 }
 
 void Scheduler::remove_task(task_id_t t) {
@@ -174,6 +170,7 @@ bool Scheduler::verify_self() {
 void Scheduler::get_task_packs(TaskPack *pack_ptr, bool first_pack) {
 	int pl= 0;
 	TaskPack& pack = *pack_ptr;
+	pack.scheduler = this;
 	auto para_lane = [&](int pli) { return pack.para_lanes->at(pli);};
 	WaitBarrierTask* waitBarrier = new WaitBarrierTask();
 	ArriveBarrierTask* arriveBarrier = new ArriveBarrierTask();
@@ -214,8 +211,8 @@ void Scheduler::get_task_packs(TaskPack *pack_ptr, bool first_pack) {
 }
 
 void Scheduler::dump_lanes(void* lanes) {
-	for (auto lane : *(vector<ParallelLane> *)lanes) {
-		for (auto t : lane.ready_tasks) {
+	for (auto& lane : *(vector<ParallelLane> *)lanes) {
+		for (const auto& t : lane.ready_tasks) {
 			LOG_DEBUG("%s ==> ", get_op_name(t.get_op_code()).c_str());
 		}
 		LOG_DEBUG("\n");

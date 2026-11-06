@@ -85,9 +85,4 @@
     <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="cuda_code.cpp">
-      <Filter>Source Files</Filter>
-    </CudaCompile>
-  </ItemGroup>
 </Project>

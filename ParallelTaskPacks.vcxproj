@@ -141,7 +141,6 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="cuda_code.cpp" />
     <ClCompile Include="data.cpp" />
     <ClCompile Include="device_task_manager.cpp" />
     <ClCompile Include="package_manager.cpp" />

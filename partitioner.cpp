@@ -13,6 +13,7 @@ Partition::Partition(Data *d, size_t rows, size_t cols) : row_count(rows), col_c
 			snprintf(ss, sizeof(ss), "%s_%zu_%zu", d->get_name().c_str(), i, j);
 			Data *elem= d->get_scheduler()->register_data(ss, (char*)d->get_address() + offset, elem_size_in_bytes);
 			elem->set_parent(d);
+			elem->set_block_index(i, j);
 			blocks.push_back(elem);
 		}
 	}	

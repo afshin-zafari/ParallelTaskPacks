@@ -18,7 +18,10 @@ private:
 public:
 	GPUTask(Task*);
 	GPUTask(op_code);
-	__host__ __device__	op_code get_op_code() const { return _op_code; }
+#ifdef __CUDA
+	__host__ __device__	
+#endif
+		op_code get_op_code() const { return _op_code; }
 	task_id_t get_task_id() const { return task_id; }
 	task_id_t get_scheduler_id() const { return sch_id; }
 	const Args& get_args() const { return _args; }

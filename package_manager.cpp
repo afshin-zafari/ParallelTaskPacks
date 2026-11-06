@@ -30,9 +30,10 @@ PackageManager::PackageManager(vector<Scheduler*>* s, int pack_count, int pl_cou
 			ParallelLane pl_{};
 			packs->at(p).para_lanes->emplace_back(pl_);
 			if (gpu_packs != nullptr) {
-				get_gpu_pack(p, pl).dev_mem = malloc(DEV_MEM_SIZE);
-				get_gpu_pack(p, pl).dev_mem_size = DEV_MEM_SIZE;
-				get_gpu_pack(p, pl).state= can_be_filled;
+				auto& g_pack = get_gpu_pack(p, pl);
+				g_pack.dev_mem = malloc(DEV_MEM_SIZE);
+				g_pack.dev_mem_size = DEV_MEM_SIZE;
+				g_pack.state= can_be_filled;
 			}
 		}
 	}
@@ -47,16 +48,18 @@ void PackageManager::create_next_pack(bool first_pack) {
 	size_t total_task_count = 0;
 	int p_idx = last_pack_filled;	
 	do {
-		while (packs->at(p_idx).async_barrier_count->load() != 0) {
+		auto& target_pack= packs->at(p_idx);
+		auto& cur_sch = *schedulers->at(s_idx);
+		while (target_pack.async_barrier_count->load() != 0) {
 			std::this_thread::yield();
 		}
 		LOG_DEBUG("s-p, %d-%d\n", s_idx, p_idx);
-		schedulers->at(s_idx)->get_task_packs(&packs->at(p_idx), first_pack);
+		cur_sch.get_task_packs(&target_pack, first_pack);
 		for (int pl = 0; pl < parallel_lane_count; pl++) {
-			get_gpu_pack(p_idx, pl).state = filled_by_scheduler;
+			set_gpu_pack_state(p_idx, pl, filled_by_scheduler);
 		}
-		packs->at(p_idx).async_barrier_count->store(parallel_lane_count);
-		total_task_count += packs->at(p_idx).task_count;
+		target_pack.async_barrier_count->store(parallel_lane_count);
+		total_task_count += target_pack.task_count;
 		last_pack_filled = (last_pack_filled + 1) % packs->size();
 		p_idx = last_pack_filled;
 		if (total_task_count >= min_tasks_to_pack) break;
@@ -114,7 +117,7 @@ void PackageManager::copy_results_to_host(const GPUTask& gtask) {
 void PackageManager::pack_parallel_lane_finished(int p, int pl) {
 	LOG_DEBUG("p,pl finished: %d,%d\n", p, pl);
 	if (packs->at(p).async_barrier_count->fetch_sub(1) == 1) {		
-		get_gpu_pack(p, pl).state = can_be_filled;
+		set_gpu_pack_state(p, pl, can_be_filled);
 		for (int pl_idx = 0; pl_idx < parallel_lane_count; pl_idx++) {
 			for (const GPUTask& gtask: packs->at(p).para_lanes->at(pl_idx).ready_tasks) {
 				copy_results_to_host(gtask);

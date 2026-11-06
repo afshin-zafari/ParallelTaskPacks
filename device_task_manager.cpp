@@ -7,8 +7,6 @@
 #include "timer_aggregate.hpp"
 #include "transfer_memory.hpp"
 
-
-//__device__ 
 void run_task_cpu(int p, GPUTask* gt) {	
 	switch (gt->get_op_code()) {
 	case Op_SumReduction:

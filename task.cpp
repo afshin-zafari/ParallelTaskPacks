@@ -2,6 +2,7 @@
 #include <string>
 
 #include "data.hpp"
+#include "gpu_tasks.hpp"
 #include "scheduler.hpp"
 #include "task.hpp"
 
@@ -45,6 +46,7 @@ std::string get_op_name(op_code op) {
 	return name;
 }
 
+
 Task::Task(Scheduler *s, op_code op, const string& n) : id(0), _op_code(op), scheduler(nullptr), state(TASK_CREATED), parent(nullptr), child_finished_count(0) {
 	scheduler = s;
 	s->register_task(this);
@@ -52,6 +54,12 @@ Task::Task(Scheduler *s, op_code op, const string& n) : id(0), _op_code(op), sch
 	name += n;		
 }
 
+Task::Task(GPUTask* gt) {
+	scheduler = nullptr;
+	id = gt->get_task_id();
+	_op_code = gt->get_op_code();
+	name = get_op_name(_op_code);
+}
 Task* Task::reads(Data* d) {
 	data.push_back(d->get_id());
 	access.push_back(ACCESS_READ);

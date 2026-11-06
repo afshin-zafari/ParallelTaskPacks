@@ -19,12 +19,13 @@ private:
 	vector<Data*> data;
 	queue<task_id_t> ready_tasks;	
 	recursive_mutex _mutex;
-	bool task_pack_mode;
 public:
+	static void clear_all() {
+		last_id = 0;
+	}
 	Scheduler();
-	Scheduler(bool);
 	Scheduler(const Scheduler&) = default;
-	scheduler_id_t get_id() { return id; }
+	scheduler_id_t get_id() const { return id; }
 	task_id_t register_task(Task* t, Task *parentTask = nullptr);
 	void remove_task(task_id_t t);
 	Task* get_task(task_id_t t) { return tasks[t]; }

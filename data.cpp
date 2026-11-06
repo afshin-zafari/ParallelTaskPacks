@@ -95,7 +95,7 @@ void Data::modify_completed() {
 	rt_state++;
 }
 
-Partition* Data::partition(int rows, int cols) {
+Partition* Data::partition(size_t rows, size_t cols) {
 	_partition = new Partition(this, rows, cols);
 	return _partition;
 }

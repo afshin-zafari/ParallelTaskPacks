@@ -1,13 +1,11 @@
 #pragma once
 #include <cstddef>
-#define __CUDA
+//#define __CUDA
 
 
 #ifdef __CUDA
 #include <cuda_runtime.h>
-#else
-#define __device__
-#define __global__
+
 #endif
 
 #include "common.hpp"
@@ -18,9 +16,13 @@
 
 class GPUTask;
 struct GPUTaskPlaceState;
+#ifdef __CUDA
 __device__
+#endif
 void run_task(int p, GPUTask* gt);
+#ifdef __CUDA
 __global__
+#endif
 void persistent_kernel(bool* kernels_end, GPUTaskPlaceState* gpu_packs, size_t np, size_t n_pl, size_t pl);
 
 using namespace std;

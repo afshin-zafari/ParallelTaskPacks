@@ -29,6 +29,11 @@ public:
 		Task*		task;
 		shared_future<void> async_state;
 	};
+	TransferMemory() : last_rid(0), last_stream(0) {
+		for (int i = 0; i < STREAM_COUNT; i++) {
+			streams[i] = Stream();
+		}
+	}
 	RID register_xfer(Request& req);
 	bool is_done(RID);
 	bool check_and_remove_if_done(RID);

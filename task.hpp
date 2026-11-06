@@ -10,6 +10,7 @@ using namespace std;
 
 class Data;
 class Scheduler;
+class GPUTask;
 
 class Task {
 private:
@@ -28,6 +29,7 @@ private:
 	float extra_arg0, extra_arg1;
 public:
 	Task(Scheduler* s=nullptr, op_code op = Op_None, const string& n = "");
+	Task(GPUTask*);
 	task_id_t get_id();
 	op_code get_op_code() { return _op_code; }
 	void set_op_code(op_code op) { _op_code = op; }
@@ -56,4 +58,5 @@ public:
 		return arg == 0 ? extra_arg0 : extra_arg1;
 	}
 	size_t get_size_of_arg(int arg);
+	vector<int>* get_access() { return &access; }
 };

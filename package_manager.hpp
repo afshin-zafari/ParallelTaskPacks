@@ -34,11 +34,11 @@ struct ParallelLane {
 };
 
 struct TaskPack {
-	Scheduler* sch;
+	Scheduler* scheduler;
 	std::atomic<int>* async_barrier_count;
 	long task_count;		
 	vector<ParallelLane>* para_lanes;
-	TaskPack() : sch(nullptr),  task_count(0), para_lanes(nullptr) {
+	TaskPack() : scheduler(nullptr),  task_count(0), para_lanes(nullptr) {
 		async_barrier_count = new std::atomic<int>(0);
 	}
 };
@@ -65,4 +65,5 @@ public:
 	void create_next_pack(bool first_pack = false);
 	void pack_parallel_lane_finished(int p, int pl);
 	void copy_results_to_host(const GPUTask& gtask);
+	void set_gpu_pack_state(int p, int pl, PackState state) { get_gpu_pack(p, pl).state = state; }
 };

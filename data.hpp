@@ -25,6 +25,7 @@ private:
 	Scheduler* scheduler;
 	Data* parent;
 	Partition* _partition;
+	size_t x, y;
 public:
 	Data();
 	~Data();
@@ -47,5 +48,7 @@ public:
 	void set_parent(Data* p) { parent = p; }
 	Data *get_parent() { return parent;  }
 	Partition* get_partition() { return _partition; }
-	Partition* partition(int rows, int cols);
+	Partition* partition(size_t rows, size_t cols);
+	void set_block_index(size_t x, size_t y) { this->x = x; this->y = y; }
+	void get_block_index(size_t& x, size_t& y) { x = this->x; y = this->y; }
 };
