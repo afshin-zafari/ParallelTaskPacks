@@ -253,20 +253,21 @@ TEST(TestExecution, Hierarchical) {
 
 	EXPECT_TRUE(s.verify_self()) << "Not all tasks are in their final state";
 }
-struct dim2 { int x, y; };
+struct dim2 { int rows, cols; };
 
 
 Data* create_tensor(Scheduler& s, const char* A, dim2 shape, dim2 tile) {
-	size_t bytes_A = (size_t)shape.x * shape.y * sizeof(float); 
+	size_t bytes_A = (size_t)shape.rows * shape.cols * sizeof(float); 
 	void* mem_A = malloc(bytes_A);
 	Data* ptr_A = s.register_data(A, mem_A, bytes_A); 
-	ptr_A->partition(tile.x, tile.y);
+	ptr_A->set_shape(shape.rows, shape.cols);
+	ptr_A->partition(tile.rows, tile.cols);
 	return ptr_A;
 }
 
 void create_SumRow(string name, Scheduler& s, Data* A, Data* B, dim2 tiles) {
-	int M = tiles.x;
-	int N = tiles.y;
+	int M = tiles.rows;
+	int N = tiles.cols;
 	Partition& a = *A->get_partition();
 	Partition& b = *B->get_partition();
 
@@ -281,8 +282,8 @@ void create_SumRow(string name, Scheduler& s, Data* A, Data* B, dim2 tiles) {
 }
 
 void create_MatMul(string name, Scheduler& s, Data* A, Data* B, Data* C, dim2 tiles) {
-	int M = tiles.x;
-	int N = tiles.y;
+	int M = tiles.rows;
+	int N = tiles.cols;
 	Partition& a = *A->get_partition();
 	Partition& b = *B->get_partition();
 	Partition& c = *C->get_partition();
@@ -315,7 +316,45 @@ void create_QK_SumRow(Scheduler& s, string tag, QKConfig config) {
 	create_SumRow(string("SumRow") + tag, s, C, D, config.tiles_sum_row);
 }
 
+TEST(DataPartitions, TileContents) {
+	Scheduler s;
+	const int M = 16, N = 32;
+	const int BM = 4, BN = 4;
+	const int BMM = M / BM, BNN = N / BN;
+	Data& A = *create_tensor(s, "A", { M, N }, { BM, BN });
 
+	float* mem = static_cast<float*>(A.get_address());
+	for (size_t i = 0; i < M * N; ++i) {
+		mem[i] = static_cast<float>(i);
+	}
+	for (int ti = 0; ti < BM; ++ti) {
+		for (int tj = 0; tj < BN; ++tj) {
+			Partition& a = *A.get_partition();
+			Data& tile = *a(ti, tj);
+			size_t parent_row_size, elem_size;
+			tile.get_parent_tile_size(parent_row_size, elem_size);	
+			char* base = static_cast<char*>(tile.get_address());			
+			for (size_t i = 0; i < BMM; ++i) {
+				for (size_t j = 0; j < BNN; ++j) {
+					size_t parent_index = (ti * BMM + i) * N + (tj * BNN + j);
+					float expected_value = static_cast<float>(parent_index);
+					char* elem_addr = base + i * parent_row_size + j * elem_size;
+					float actual_value = *(float*)(elem_addr);
+					if (actual_value != expected_value) {
+						int k = 0;
+					}
+					EXPECT_EQ(expected_value, actual_value) << "Mismatch at tile (" << ti << ", " << tj << "), element (" << i << ", " << j << ")";
+				}				
+			}
+		}
+	}
+/*
+* create A M x N
+* fill it seq 1 .. MxN
+* partition it into bMxbN tiles 
+* get tile(ti,tj).elem(i,j) and compare the content of the tile with the expected values
+*/
+}
 
 TEST(PacksTest, PackContents_OneScheduler) {
 
@@ -528,8 +567,8 @@ TEST(TestExecution, TimingExecution) {
 		for (auto mb : Mb_list) {
 			for (bool with_task_pack : {false, true}) {
 				for (int iter = 0; iter < 2; iter++) {
-					shape.x = shape.y = m;
-					tiles.x = tiles.y = mb;
+					shape.rows = shape.cols = m;
+					tiles.rows = tiles.cols = mb;
 					Data* A = create_tensor(s, "A", shape, tiles);
 					Data* B = create_tensor(s, "B", shape, tiles);
 					Data* C = create_tensor(s, "C", shape, tiles);

@@ -53,6 +53,7 @@ public:
 	void set_block_index(size_t x, size_t y) { this->parent_tile_x = x; this->parent_tile_y = y; }
 	void get_block_index(size_t& x, size_t& y) { x = this->parent_tile_x; y = this->parent_tile_y; }
 	void get_shape(size_t& rows, size_t& cols) { rows = row_count; cols = col_count; }
+	void set_shape(size_t rows, size_t cols) { row_count = rows; col_count = cols; }
 	void set_parent_tile_size(size_t row_size, size_t elem_size) { parent_row_size = row_size; element_size = elem_size; }
 	void get_parent_tile_size(size_t& row_size, size_t& elem_size) { row_size = parent_row_size; elem_size = element_size; }
 };
