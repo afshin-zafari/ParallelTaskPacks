@@ -197,3 +197,13 @@ size_t Task::get_size_of_arg(int arg) {
 	Data* d = get_scheduler()->get_data(arg_id);
 	return d->get_size();
 }
+
+void Task::get_tile_info(int arg, TileMemory& tile_mem) {
+	if (arg >= data.size()) {
+		return;
+	}
+	data_id_t arg_id = data[arg];
+	Data* d = get_scheduler()->get_data(arg_id);
+	d->get_parent_tile_size(tile_mem.parent_row_size, tile_mem.elem_size);
+	tile_mem.dev_mem = get_address_of_arg(arg);
+}

@@ -20,12 +20,13 @@ private:
 	//       ^- read-request
 
 	void* address;
-	size_t size;
+	size_t size, row_count, col_count;
 	string name;
 	Scheduler* scheduler;
 	Data* parent;
 	Partition* _partition;
-	size_t x, y;
+	size_t parent_tile_x, parent_tile_y;
+	size_t parent_row_size, element_size;
 public:
 	Data();
 	~Data();
@@ -49,6 +50,9 @@ public:
 	Data *get_parent() { return parent;  }
 	Partition* get_partition() { return _partition; }
 	Partition* partition(size_t rows, size_t cols);
-	void set_block_index(size_t x, size_t y) { this->x = x; this->y = y; }
-	void get_block_index(size_t& x, size_t& y) { x = this->x; y = this->y; }
+	void set_block_index(size_t x, size_t y) { this->parent_tile_x = x; this->parent_tile_y = y; }
+	void get_block_index(size_t& x, size_t& y) { x = this->parent_tile_x; y = this->parent_tile_y; }
+	void get_shape(size_t& rows, size_t& cols) { rows = row_count; cols = col_count; }
+	void set_parent_tile_size(size_t row_size, size_t elem_size) { parent_row_size = row_size; element_size = elem_size; }
+	void get_parent_tile_size(size_t& row_size, size_t& elem_size) { row_size = parent_row_size; elem_size = element_size; }
 };

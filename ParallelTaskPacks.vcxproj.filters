@@ -30,7 +30,7 @@
     <ClCompile Include="transfer_memory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="package_manager.cpp">
+    <ClCompile Include="pack_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gpu_tasks.cpp">
@@ -68,7 +68,7 @@
     <ClInclude Include="device_task_manager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="package_manager.hpp">
+    <ClInclude Include="pack_manager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gpu_tasks.hpp">

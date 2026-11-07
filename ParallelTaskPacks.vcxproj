@@ -143,7 +143,7 @@
   <ItemGroup>
     <ClCompile Include="data.cpp" />
     <ClCompile Include="device_task_manager.cpp" />
-    <ClCompile Include="package_manager.cpp" />
+    <ClCompile Include="pack_manager.cpp" />
     <ClCompile Include="partitioner.cpp" />
     <ClCompile Include="scheduler.cpp" />
     <ClCompile Include="gpu_tasks.cpp" />
@@ -158,7 +158,7 @@
     <ClInclude Include="gpu_tasks.hpp" />
     <ClInclude Include="timer_aggregate.hpp" />
     <ClCompile Include="logger.hpp" />
-    <ClInclude Include="package_manager.hpp" />
+    <ClInclude Include="pack_manager.hpp" />
     <ClInclude Include="partitioner.hpp" />
     <ClInclude Include="scheduler.hpp" />
     <ClInclude Include="task.hpp" />

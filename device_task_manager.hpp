@@ -4,7 +4,7 @@
 #include "cuda_code.hpp"
 
 
-class PackageManager;
+class PackManager;
 struct TaskPack;
 struct GPUTaskPlaceState;
 using namespace std;
@@ -14,11 +14,11 @@ private:
 	TransferMemory* xfer_mngr;	
 	shared_future<void> loop_future;
 	vector<shared_future<void>> kernel_futures;
-	PackageManager* pkg_manager;
+	PackManager* pkg_manager;
 	vector<TaskPack>* packs;
 	GPUTaskPlaceState* gpu_packs;
 public:
-	DeviceTaskManager(PackageManager* pmngr);	
+	DeviceTaskManager(PackManager* pmngr);	
 	void start();
 	void start_gpu();
 	void copy_to_dev(int p, int pl);

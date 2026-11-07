@@ -11,6 +11,7 @@ using namespace std;
 class Data;
 class Scheduler;
 class GPUTask;
+struct TileMemory;
 
 class Task {
 private:
@@ -59,4 +60,5 @@ public:
 	}
 	size_t get_size_of_arg(int arg);
 	vector<int>* get_access() { return &access; }
+	void get_tile_info(int arg, TileMemory& tile_mem);
 };

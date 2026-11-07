@@ -1,11 +1,11 @@
 #include <thread>
 
 #include "logger.hpp"
-#include "package_manager.hpp"
+#include "pack_manager.hpp"
 #include "scheduler.hpp"
 #include "timer_aggregate.hpp"
 
-PackageManager::PackageManager(vector<Scheduler*>* s, int pack_count, int pl_count, int min_tasks) {
+PackManager::PackManager(vector<Scheduler*>* s, int pack_count, int pl_count, int min_tasks) {
 	schedulers = s;
 	last_pack_filled = 0;
 	parallel_lane_count = pl_count;
@@ -39,11 +39,11 @@ PackageManager::PackageManager(vector<Scheduler*>* s, int pack_count, int pl_cou
 	}
 }
 
-void PackageManager::create_first_packs() {
+void PackManager::create_first_packs() {
 	create_next_pack(true /*first_pack*/);
 }
 
-void PackageManager::create_next_pack(bool first_pack) {
+void PackManager::create_next_pack(bool first_pack) {
 	int s_idx = 0;	
 	size_t total_task_count = 0;
 	int p_idx = last_pack_filled;	
@@ -68,15 +68,15 @@ void PackageManager::create_next_pack(bool first_pack) {
 	LOG_DEBUG("s-p finished  === ");
 }
 
-GPUTaskPlaceState* PackageManager::get_gpu_packs() {
+GPUTaskPlaceState* PackManager::get_gpu_packs() {
 	return gpu_packs;	
 }
 
-vector<TaskPack>* PackageManager::get_packs() {
+vector<TaskPack>* PackManager::get_packs() {
 	return packs;
 }
 
-void PackageManager::copy_results_to_host(const GPUTask& gtask) {
+void PackManager::copy_results_to_host(const GPUTask& gtask) {
 	switch (gtask.get_op_code()) {
 	case Op_None:
 	case Op_waitBarrier:
@@ -103,7 +103,7 @@ void PackageManager::copy_results_to_host(const GPUTask& gtask) {
 			size_t size = 0;
 			switch (gtask.get_op_code()) {
 			case Op_GEMM:
-				src = gtask.get_args().gemm_args.C;
+				src = gtask.get_args().gemm_args.C.dev_mem;//ToDo: memory is not adjacent for the blocks, need to fix this
 				dest = task->get_address_of_arg(2);
 				size = task->get_size_of_arg(2);				
 			}
@@ -114,7 +114,7 @@ void PackageManager::copy_results_to_host(const GPUTask& gtask) {
 	}
 }
 
-void PackageManager::pack_parallel_lane_finished(int p, int pl) {
+void PackManager::pack_parallel_lane_finished(int p, int pl) {
 	LOG_DEBUG("p,pl finished: %d,%d\n", p, pl);
 	if (packs->at(p).async_barrier_count->fetch_sub(1) == 1) {		
 		set_gpu_pack_state(p, pl, can_be_filled);
@@ -130,6 +130,6 @@ void PackageManager::pack_parallel_lane_finished(int p, int pl) {
 
 }
 
-GPUTaskPlaceState& PackageManager::get_gpu_pack(int p, int pl) {
+GPUTaskPlaceState& PackManager::get_gpu_pack(int p, int pl) {
 	return gpu_packs[pl + p * parallel_lane_count];
 }

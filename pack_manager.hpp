@@ -45,7 +45,7 @@ struct TaskPack {
 
 class Scheduler;
 
-class PackageManager {
+class PackManager {
 private:
 	vector<TaskPack>* packs;
 	vector<Scheduler*>* schedulers;
@@ -56,7 +56,7 @@ private:
 	int parallel_lane_count;
 	int min_tasks_to_pack;
 public:
-	PackageManager(vector<Scheduler*>* s, int p, int pl, int min_tasks);	
+	PackManager(vector<Scheduler*>* s, int p, int pl, int min_tasks);	
 	bool* get_kernel_end() { return kernels_end; }
 	vector<TaskPack>* get_packs();
 	GPUTaskPlaceState* get_gpu_packs();

@@ -3,7 +3,7 @@
 #include "data.hpp"
 #include "device_task_manager.hpp"
 #include "logger.hpp"
-#include "package_manager.hpp"
+#include "pack_manager.hpp"
 #include "partitioner.hpp"
 #include "scheduler.hpp"
 #include "timer_aggregate.hpp"
@@ -328,7 +328,7 @@ TEST(PacksTest, PackContents_OneScheduler) {
 	vector<Scheduler*> sch{ &s };
 	
 
-	PackageManager pmngr(&sch, 20, 2, 1);		
+	PackManager pmngr(&sch, 20, 2, 1);		
 	map<data_id_t, bool> data_written;
 
 	pmngr.create_first_packs();
@@ -371,7 +371,7 @@ TEST(PacksTest, PackContents_TwoSchedulers) {
 	vector<Scheduler*> sch{ &s1, &s2 };
 	
 
-	PackageManager pmngr(&sch, 20, 2, 1);		
+	PackManager pmngr(&sch, 20, 2, 1);		
 	map<data_id_t, bool> data_written;
 
 	pmngr.create_first_packs();
@@ -414,7 +414,7 @@ TEST(PacksTest, PackContents_PackSequences) {
 	vector<Scheduler*> sch{ &s1, &s2 };
 	
 
-	PackageManager pmngr(&sch, 20, 2, 1);		
+	PackManager pmngr(&sch, 20, 2, 1);		
 	map<data_id_t, bool> data_written;
 
 	pmngr.create_first_packs();
@@ -458,7 +458,7 @@ TEST(PacksTest, PackContents_InsufficientTaskCount) {
 	vector<Scheduler*> sch{ &s1, &s2 };
 	
 	const int min_task_count = 20;
-	PackageManager pmngr(&sch, 20, 2, min_task_count);		
+	PackManager pmngr(&sch, 20, 2, min_task_count);		
 	map<data_id_t, bool> data_written;
 	int sch_count[2] = { 0,0 };
 	int task_count = 0;
@@ -507,7 +507,7 @@ TEST(TestExecution, TaskPacks) {
 	sch.push_back(&s1);
 	sch.push_back(&s2);
 
-	PackageManager pmngr(&sch, 20, 4, 20);
+	PackManager pmngr(&sch, 20, 4, 20);
 	DeviceTaskManager dmngr(&pmngr);
 	pmngr.create_first_packs();
 	dmngr.start();

@@ -3,8 +3,15 @@
 #include "cuda_code.hpp"
 #include "task.hpp"
 
-struct GEMM_Op_Args { void* A{ nullptr }; void* B{ nullptr }; void* C{ nullptr }; float alpha{ 1.0 }; };
-struct Scale_Op_Args { void* A{ nullptr }; void* B{ nullptr }; float alpha{ 1.0 }; };
+struct TileMemory {
+	void* dev_mem{ nullptr };
+	size_t dev_mem_size{ 0 };
+	size_t parent_row_size{ 0 };
+	size_t elem_size{ 0 };
+};
+struct GEMM_Op_Args { TileMemory A; TileMemory B; TileMemory C; float alpha{ 1.0 }; };
+struct Scale_Op_Args { TileMemory A; TileMemory B; float alpha{ 1.0 }; };
+
 
 class GPUTask {
 private:

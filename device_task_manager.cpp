@@ -2,12 +2,12 @@
 
 #include "device_task_manager.hpp"
 #include "gpu_tasks.hpp"
-#include "package_manager.hpp"
+#include "pack_manager.hpp"
 #include "scheduler.hpp"
 #include "timer_aggregate.hpp"
 #include "transfer_memory.hpp"
 
-void run_task_cpu(int p, GPUTask* gt) {	
+static void run_task_cpu(int p, GPUTask* gt) {	
 	switch (gt->get_op_code()) {
 	case Op_SumReduction:
 		break;
@@ -53,11 +53,11 @@ static void persistent_kernel_cpu(bool* kernels_end, GPUTaskPlaceState* gpu_pack
 		if (t >= max_task_count) {
 			state = finished; // temp solution, to be fixed/completed			
 		}
-		p = (p+1) % np;
+		p = (int)((static_cast<size_t>(p)+1) % np);
 	}
 }
 
-DeviceTaskManager::DeviceTaskManager(PackageManager* pmngr) {
+DeviceTaskManager::DeviceTaskManager(PackManager* pmngr) {
 	pkg_manager = pmngr;
 	packs = pkg_manager->get_packs();
 	gpu_packs = pkg_manager->get_gpu_packs();
