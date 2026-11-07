@@ -20,7 +20,12 @@ Data::Data():
 
 Data::~Data() {
 	delete _partition;
-	free(address);
+	if (parent == nullptr) {
+		if (address != nullptr) {
+			free(address);
+		}
+	}
+	address = nullptr;
 }
 Data::Data(Scheduler* s, void *addr, size_t size) : 
 	id(),

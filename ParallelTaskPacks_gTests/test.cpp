@@ -262,6 +262,10 @@ Data* create_tensor(Scheduler& s, const char* A, dim2 shape, dim2 tile) {
 	Data* ptr_A = s.register_data(A, mem_A, bytes_A); 
 	ptr_A->set_shape(shape.rows, shape.cols);
 	ptr_A->partition(tile.rows, tile.cols);
+	float* mem = static_cast<float*>(ptr_A->get_address());
+	for (size_t i = 0; i < shape.rows * shape.cols; ++i) {
+		mem[i] = static_cast<float>(i);
+	}
 	return ptr_A;
 }
 
@@ -316,6 +320,65 @@ void create_QK_SumRow(Scheduler& s, string tag, QKConfig config) {
 	create_SumRow(string("SumRow") + tag, s, C, D, config.tiles_sum_row);
 }
 
+TEST(DataPartitions, PackContents) {
+	Scheduler::clear_all();
+	Scheduler s;
+	const int M = 16, N = 32;
+	const int BM = 4, BN = 4;
+	const int BMM = M / BM, BNN = N / BN;
+	
+	
+	QKConfig qk_cfg{ {M , N}, {M, 1}, {BM, BN}, {BM, 1} };
+	create_QK_SumRow(s, "_s", qk_cfg);
+	vector<Scheduler*> sch{ &s };
+
+
+	PackManager pmngr(&sch, 2, 1, 1);
+	DeviceTaskManager dtm(&pmngr);
+	pmngr.create_first_packs();
+	dtm.copy_to_dev(0, 0);
+	auto* g_packs = pmngr.get_gpu_packs();
+	GPUTask* g_tasks = static_cast<GPUTask*>(g_packs[0].dev_mem);
+	for (int t = 0; t < BM * BN; t++) {
+		auto tid = g_tasks[t].get_task_id();
+		auto* ctask = s.get_task(tid);
+		char* g_mem;
+		size_t parent_row_size;
+		size_t elem_size;
+		char* c_mem;
+
+		for (int i = 0; i < BMM; i++) {
+			for (int j = 0; j < BNN; j++) {
+				for (int arg = 0; arg < 3; arg++) {
+					switch (arg) {
+					case 0:
+						g_mem = (char*)g_tasks[t].get_args().gemm_args.A.dev_mem;
+						parent_row_size = g_tasks[t].get_args().gemm_args.A.parent_row_size;
+						elem_size = g_tasks[t].get_args().gemm_args.A.elem_size;
+						break;
+					case 1:
+						g_mem = (char*)g_tasks[t].get_args().gemm_args.B.dev_mem;
+						parent_row_size = g_tasks[t].get_args().gemm_args.B.parent_row_size;
+						elem_size = g_tasks[t].get_args().gemm_args.B.elem_size;
+						break;
+					case 2:
+						g_mem = (char*)g_tasks[t].get_args().gemm_args.C.dev_mem;
+						parent_row_size = g_tasks[t].get_args().gemm_args.C.parent_row_size;
+						elem_size = g_tasks[t].get_args().gemm_args.C.elem_size;
+						break;
+					}
+					c_mem = (char*)ctask->get_address_of_arg(arg);
+					float cpu_elem = *(float*)(c_mem + i * parent_row_size + j * elem_size);
+					float gpu_elem = *(float*)(g_mem + i * parent_row_size + j * elem_size);
+					EXPECT_EQ(cpu_elem, gpu_elem);
+				}
+			}
+		}
+
+	}
+
+}
+
 TEST(DataPartitions, TileContents) {
 	Scheduler s;
 	const int M = 16, N = 32;
@@ -340,10 +403,9 @@ TEST(DataPartitions, TileContents) {
 					float expected_value = static_cast<float>(parent_index);
 					char* elem_addr = base + i * parent_row_size + j * elem_size;
 					float actual_value = *(float*)(elem_addr);
-					if (actual_value != expected_value) {
-						int k = 0;
-					}
-					EXPECT_EQ(expected_value, actual_value) << "Mismatch at tile (" << ti << ", " << tj << "), element (" << i << ", " << j << ")";
+					EXPECT_EQ(expected_value, actual_value)
+						<< "Mismatch at tile (" << ti << ", " << tj 
+						<< "), element (" << i << ", " << j << ")";
 				}				
 			}
 		}

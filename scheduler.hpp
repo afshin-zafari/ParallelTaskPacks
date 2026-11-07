@@ -24,6 +24,7 @@ public:
 		last_id = 0;
 	}
 	Scheduler();
+	~Scheduler();
 	Scheduler(const Scheduler&) = default;
 	scheduler_id_t get_id() const { return id; }
 	task_id_t register_task(Task* t, Task *parentTask = nullptr);

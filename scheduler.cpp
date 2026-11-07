@@ -11,6 +11,17 @@ Scheduler::Scheduler() {
 	id = last_id++;	
 }
 
+Scheduler::~Scheduler() {
+	for (auto* d : data) {
+		delete d;
+	}
+	data.clear();
+	for (auto* t : tasks) {
+		delete t;
+	}
+	tasks.clear();
+}
+
 task_id_t Scheduler::register_task(Task* t, Task *parentTask) {
 	t->set_scheduler(this);
 	t->set_id(static_cast<task_id_t>(tasks.size()));
