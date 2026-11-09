@@ -205,5 +205,6 @@ void Task::get_tile_info(int arg, TileMemory& tile_mem) {
 	data_id_t arg_id = data[arg];
 	Data* d = get_scheduler()->get_data(arg_id);
 	d->get_parent_tile_size(tile_mem.parent_row_size, tile_mem.elem_size);
+	d->get_tile_size(tile_mem.rows, tile_mem.cols);
 	tile_mem.dev_mem = get_address_of_arg(arg);
 }

@@ -20,10 +20,8 @@ static void run_task_cpu(int p, GPUTask* gt) {
 	}
 }
 
-
 static void persistent_kernel_cpu(bool* kernels_end, GPUTaskPlaceState* gpu_packs, size_t np, size_t n_pl, size_t pl) {
-	int p = 0;	
-	vector<string> kernel_tasks;
+	unsigned int p = 0;	
 	while (true) {
 		volatile auto& pack_entry = gpu_packs[pl + p * n_pl];
 		volatile auto& state = pack_entry.state;
@@ -53,7 +51,7 @@ static void persistent_kernel_cpu(bool* kernels_end, GPUTaskPlaceState* gpu_pack
 		if (t >= max_task_count) {
 			state = finished; // temp solution, to be fixed/completed			
 		}
-		p = (int)((static_cast<size_t>(p)+1) % np);
+		p = (p + 1) % np;
 	}
 }
 

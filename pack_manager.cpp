@@ -103,7 +103,7 @@ void PackManager::copy_results_to_host(const GPUTask& gtask) {
 			size_t size = 0;
 			switch (gtask.get_op_code()) {
 			case Op_GEMM:
-				src = gtask.get_args().gemm_args.C.dev_mem;//ToDo: memory is not adjacent for the blocks, need to fix this
+				src = gtask.get_args().gemm_args.operands[2].dev_mem;//ToDo: memory is not adjacent for the blocks, need to fix this
 				dest = task->get_address_of_arg(2);
 				size = task->get_size_of_arg(2);				
 			}

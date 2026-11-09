@@ -8,9 +8,11 @@ struct TileMemory {
 	size_t dev_mem_size{ 0 };
 	size_t parent_row_size{ 0 };
 	size_t elem_size{ 0 };
+	size_t rows{0}, cols{0};
 };
-struct GEMM_Op_Args { TileMemory A; TileMemory B; TileMemory C; float alpha{ 1.0 }; };
-struct Scale_Op_Args { TileMemory A; TileMemory B; float alpha{ 1.0 }; };
+
+struct GEMM_Op_Args { TileMemory operands[3]; float alpha{ 1.0 }; };
+struct Scale_Op_Args { TileMemory operands[2]; float alpha{ 1.0 }; };
 
 
 class GPUTask {

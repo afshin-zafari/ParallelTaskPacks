@@ -27,10 +27,10 @@ public:
 	~Scheduler();
 	Scheduler(const Scheduler&) = default;
 	scheduler_id_t get_id() const { return id; }
-	task_id_t register_task(Task* t, Task *parentTask = nullptr);
+	task_id_t register_task(Task* t);
 	void remove_task(task_id_t t);
 	Task* get_task(task_id_t t) { return tasks[t]; }
-	Data* register_data(const char* name, void *addr, size_t size);
+	Data* register_data(const char* name, void *addr, size_t size, dim2 shape);
 	Data* get_data(data_id_t d);
 	void remove_data(data_id_t d);
 	void dump_tasks();

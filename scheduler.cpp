@@ -22,13 +22,9 @@ Scheduler::~Scheduler() {
 	tasks.clear();
 }
 
-task_id_t Scheduler::register_task(Task* t, Task *parentTask) {
+task_id_t Scheduler::register_task(Task* t) {
 	t->set_scheduler(this);
 	t->set_id(static_cast<task_id_t>(tasks.size()));
-	t->set_parent(parentTask);
-	if (parentTask != nullptr) {
-		parentTask->add_to_children(t);
-	}
 	tasks.push_back(t);
 	return static_cast<task_id_t>(tasks.size() - 1);
 }
@@ -37,10 +33,11 @@ void Scheduler::remove_task(task_id_t t) {
 	tasks.erase(tasks.begin() + t);
 }
 
-Data* Scheduler::register_data(const char* name, void *addr, size_t size) {
+Data* Scheduler::register_data(const char* name, void *addr, size_t size, dim2 shape) {
 	Data* d = new Data(this, addr, size);
 	d->set_id(data.size());
 	d->set_name(name);
+	d->set_shape(shape.rows, shape.cols);
 	data.push_back(d);
 	return d;
 }

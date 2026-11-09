@@ -13,4 +13,5 @@ public:
 	Data* operator()(size_t i, size_t j);
 	Data* operator()(size_t index);
 	Partition(Data *d, size_t rows, size_t cols);
+	void get_tiles_info(size_t& rows, size_t& cols) { rows = row_count; cols = col_count; }
 };

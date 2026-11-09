@@ -8,14 +8,14 @@ GPUTask::GPUTask(Task* task) : _args{} {
 	sch_id = task->get_scheduler()->get_id();
 	switch (_op_code) {
 	case Op_GEMM:		
-		task->get_tile_info(0, _args.gemm_args.A);
-		task->get_tile_info(1, _args.gemm_args.B);
-		task->get_tile_info(2, _args.gemm_args.C);
+		task->get_tile_info(0, _args.gemm_args.operands[0]);
+		task->get_tile_info(1, _args.gemm_args.operands[1]);
+		task->get_tile_info(2, _args.gemm_args.operands[2]);
 		_args.gemm_args.alpha = task->get_extra_arg(0);
 		break;
 	case Op_Scale:
-		task->get_tile_info(0, _args.scale_args.A);
-		task->get_tile_info(1, _args.scale_args.B);
+		task->get_tile_info(0, _args.scale_args.operands[0]);
+		task->get_tile_info(1, _args.scale_args.operands[1]);
 		_args.scale_args.alpha = task->get_extra_arg(0);
 		break;
 	default:

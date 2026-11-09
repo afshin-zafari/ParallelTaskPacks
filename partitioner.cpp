@@ -15,10 +15,12 @@ Partition::Partition(Data *d, size_t rows, size_t cols) : row_count(rows), col_c
 			size_t offset = i * rows_per_block * parent_row_size + j * cols_per_block * elem_size_in_bytes;
 			char ss[100];
 			snprintf(ss, sizeof(ss), "%s_%zu_%zu", d->get_name().c_str(), i, j);
-			Data* block = d->get_scheduler()->register_data(ss, (char*)d->get_address() + offset, block_size); // ToDo: the memory is not adjacent for the blocks, need to fix this
+			dim2 shape{rows_per_block, cols_per_block};
+			Data* block = d->get_scheduler()->register_data(ss, (char*)d->get_address() + offset, block_size, shape); // ToDo: the memory is not adjacent for the blocks, need to fix this
 			block->set_parent(d);
 			block->set_block_index(i, j);
 			block->set_parent_tile_size(parent_row_size, elem_size_in_bytes);
+			block->set_tile_size(rows_per_block, cols_per_block);
 			blocks.push_back(block);
 		}
 	}	

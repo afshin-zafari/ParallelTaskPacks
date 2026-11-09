@@ -25,8 +25,9 @@ private:
 	Scheduler* scheduler;
 	Data* parent;
 	Partition* _partition;
-	size_t parent_tile_x, parent_tile_y;
+	size_t my_tile_x_in_parent, my_tile_y_in_parent;
 	size_t parent_row_size, element_size;
+	size_t my_tile_rows, my_tile_cols;
 public:
 	Data();
 	~Data();
@@ -50,10 +51,12 @@ public:
 	Data *get_parent() { return parent;  }
 	Partition* get_partition() { return _partition; }
 	Partition* partition(size_t rows, size_t cols);
-	void set_block_index(size_t x, size_t y) { this->parent_tile_x = x; this->parent_tile_y = y; }
-	void get_block_index(size_t& x, size_t& y) { x = this->parent_tile_x; y = this->parent_tile_y; }
+	void set_block_index(size_t x, size_t y) { this->my_tile_x_in_parent = x; this->my_tile_y_in_parent = y; }
+	void get_block_index(size_t& x, size_t& y) { x = this->my_tile_x_in_parent; y = this->my_tile_y_in_parent; }
 	void get_shape(size_t& rows, size_t& cols) { rows = row_count; cols = col_count; }
 	void set_shape(size_t rows, size_t cols) { row_count = rows; col_count = cols; }
 	void set_parent_tile_size(size_t row_size, size_t elem_size) { parent_row_size = row_size; element_size = elem_size; }
 	void get_parent_tile_size(size_t& row_size, size_t& elem_size) { row_size = parent_row_size; elem_size = element_size; }
+	void get_tile_size(size_t& rows, size_t& cols) { rows = my_tile_rows; cols = my_tile_cols; }
+	void set_tile_size(size_t rows, size_t cols) { my_tile_rows = rows; my_tile_cols = cols; }
 };

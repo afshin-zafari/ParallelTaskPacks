@@ -40,3 +40,4 @@ enum op_code : uint8_t {
 };
 
 std::string get_op_name(op_code op);
+struct dim2 { int rows, cols; };
