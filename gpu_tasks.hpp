@@ -34,6 +34,13 @@ public:
 	task_id_t get_task_id() const { return task_id; }
 	task_id_t get_scheduler_id() const { return sch_id; }
 	const Args& get_args() const { return _args; }
+	float get_elem_val_arg_at_ij(int arg, int i, int j) {
+		char* g_mem = (char*)_args.gemm_args.operands[arg].dev_mem;
+		size_t parent_row_size = _args.gemm_args.operands[arg].parent_row_size;
+		size_t elem_size = _args.gemm_args.operands[arg].elem_size;
+		float gpu_elem = *(float*)(g_mem + i * parent_row_size + j * elem_size);
+		return gpu_elem;
+	}
 };
 
 class ArriveBarrierTask : public GPUTask {	

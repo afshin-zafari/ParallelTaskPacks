@@ -487,28 +487,27 @@ TEST(DataPartitions, PackContentsOnDevice) {
 	vector<Scheduler*> sch{ &s };
 
 
-	PackManager pmngr(&sch, 2, 1, 1);
+	PackManager pmngr(&sch, BK, 1, 1);
 	DeviceTaskManager dtm(&pmngr);
-	pmngr.create_first_packs();
-	dtm.copy_to_dev(0, 0);
-	int k_iter = 1;
-	auto* g_packs = pmngr.get_gpu_packs();
-	GPUTask* g_tasks = static_cast<GPUTask*>(g_packs[0].dev_mem);
-	for (int t = 0; t < BM * BN; t++) {
-		auto tid = g_tasks[t].get_task_id();
-		auto *task = s.get_task(tid);
-		simulate_gpu_gemm(&g_tasks[t]);		
-		for (int i = 0; i < BMM; i++) {
-			for (int j = 0; j < BNN; j++) {
-				char* g_mem = (char*)g_tasks[t].get_args().gemm_args.operands[2].dev_mem;
-				size_t parent_row_size = g_tasks[t].get_args().gemm_args.operands[2].parent_row_size;
-				size_t elem_size = g_tasks[t].get_args().gemm_args.operands[2].elem_size;				
-				
-				float gpu_elem = *(float*)(g_mem + i * parent_row_size + j * elem_size);
-				float expected = 2.0f * k_iter * BK;
-				EXPECT_EQ(expected, gpu_elem);
+	for (int k_iter = 1; k_iter < BK; k_iter++) {
+		pmngr.create_next_pack(k_iter == 1);
+		dtm.copy_to_dev(0, 0);	
+		auto* g_packs = pmngr.get_gpu_packs();
+		GPUTask* g_tasks = static_cast<GPUTask*>(g_packs[0].dev_mem);
+		for (int t = 0; t < BM * BN; t++) {
+			auto tid = g_tasks[t].get_task_id();
+			auto* task = s.get_task(tid);
+			simulate_gpu_gemm(&g_tasks[t]);
+			for (int i = 0; i < BMM; i++) {
+				for (int j = 0; j < BNN; j++) {
+					float gpu_elem = g_tasks[t].get_elem_val_arg_at_ij(2, i, j);
+					float expected = 2.0f * k_iter * BK;
+					EXPECT_EQ(expected, gpu_elem);
+				}
 			}
 		}
+		auto* packs = pmngr.get_packs();
+		packs->at(k_iter-1).async_barrier_count->store(0);		
 	}
 }
 
